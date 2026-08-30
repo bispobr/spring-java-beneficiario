@@ -1,121 +1,214 @@
-# API REST para Gerenciar beneficiários - Plano de saúde
+# API REST de Beneficiários — Plano de Saúde
 
-## Descrição
+API REST desenvolvida com Java e Spring Boot para gerenciamento de beneficiários de um plano de saúde.
 
-Esta aplicação é uma API REST desenvolvida para gerir Beneficiários de um plano de saúde, oferecendo suporte às operações básicas de um CRUD:
+A aplicação disponibiliza operações de cadastro, consulta, atualização e exclusão de beneficiários, incluindo informações de contato, data de nascimento e documentos associados.
 
+## Funcionalidades
 
-## Tecnologias Utilizadas
+- Cadastro de beneficiários
+- Listagem de beneficiários
+- Consulta de beneficiário por ID
+- Atualização de beneficiário
+- Exclusão de beneficiário
+- Cadastro de documentos associados ao beneficiário
+- Validação dos dados de entrada
+- Tratamento global de exceções
+- Documentação da API com Swagger/OpenAPI
+- Monitoramento com Spring Boot Actuator
+- Logs estruturados na aplicação
+- Persistência utilizando banco de dados relacional
+- Execução em container Docker
 
-- **Java + Spring Boot** – Framework principal da aplicação
-- **Lombok (@Slf4j)** – Geração de logs
-- **Tratamento de Exceções** - @RestControllerAdvice
-- **Swagger** – Documentação interativa da API
-- **Spring Boot Actuator** – Monitoramento e verificação de saúde da aplicação
-- **H2 database** – Banco de dados relacional utilizado
-- **Docker** – criação, implantação e gerenciamento de aplicações dentro de contêineres.
+## Tecnologias
+
+- Java 21+
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- Spring Validation
+- H2 Database
+- Spring Boot Actuator
+- Swagger/OpenAPI
+- Lombok
+- Maven
+- Docker
 
 ## Requisitos
 
 - Java 21+
 - Maven
+- Docker (opcional)
 
+## Executando o projeto
 
-## Executando o Projeto
-
-1. Clone o repositório:
-
-```bash
-git https://github.com/bispobr/spring-java-beneficiario.git
-```
-
-
-## Como usar (Localmente)
-
-1. Inicie a aplicação
-2. A API está acessível através do endereço http://localhost:8080
-3. A documentação da API está acessível através do Link http://localhost:8080/swagger-ui/index.html#/
-
-## Como Rodar em um Container (Opcional)
-
-1. Construa o projeto
+Clone o repositório:
 
 ```bash
-mvn clean package 
+git clone https://github.com/bispobr/spring-java-beneficiario.git
+cd spring-java-beneficiario
 ```
 
-2. Gere a Imagem Docker, com o Docker  instalado execute:
-
+Execute a aplicação com Maven:
 
 ```bash
-docker build -t beneficiario . 
+mvn spring-boot:run
 ```
 
-3. Execute o Container
+A API estará disponível em:
+
+```text
+http://localhost:8080
+```
+
+## Swagger / OpenAPI
+
+Com a aplicação em execução, a documentação interativa da API pode ser acessada em:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+## Actuator
+
+Endpoint de saúde da aplicação:
+
+```text
+http://localhost:8080/actuator/health
+```
+
+## API Endpoints
+
+### Criar beneficiário
+
+```http
+POST /beneficiarios
+Content-Type: application/json
+```
+
+Exemplo:
+
+```json
+{
+  "nome": "João da Silva",
+  "telefone": "11999999999",
+  "dataNascimento": "1980-05-03",
+  "documentos": [
+    {
+      "tipoDocumento": "CPF",
+      "descricao": "12345678900"
+    }
+  ]
+}
+```
+
+### Listar beneficiários
+
+```http
+GET /beneficiarios
+```
+
+Retorna os beneficiários cadastrados.
+
+### Consultar beneficiário por ID
+
+```http
+GET /beneficiarios/{id}
+```
+
+### Atualizar beneficiário
+
+```http
+PUT /beneficiarios/{id}
+Content-Type: application/json
+```
+
+Exemplo:
+
+```json
+{
+  "nome": "João da Silva",
+  "telefone": "11988888888",
+  "dataNascimento": "1980-05-03",
+  "documentos": [
+    {
+      "tipoDocumento": "CPF",
+      "descricao": "12345678900"
+    }
+  ]
+}
+```
+
+### Excluir beneficiário
+
+```http
+DELETE /beneficiarios/{id}
+```
+
+## Modelo de dados
+
+O beneficiário possui informações básicas e pode possuir documentos associados:
+
+```text
+Beneficiário
+├── id
+├── nome
+├── telefone
+├── dataNascimento
+└── documentos
+     ├── tipoDocumento
+     └── descricao
+```
+
+## Fluxo da API
+
+```text
+Cliente
+   │
+   ▼
+API REST
+   │
+   ▼
+Validação
+   │
+   ▼
+Camada de serviço
+   │
+   ▼
+Persistência
+   │
+   ▼
+Banco de dados
+```
+
+## Docker
+
+Gere o pacote da aplicação:
+
+```bash
+mvn clean package
+```
+
+Gere a imagem Docker:
+
+```bash
+docker build -t beneficiario .
+```
+
+Execute o container:
 
 ```bash
 docker run -p 8080:8080 beneficiario
 ```
 
-## API Endpoints
-API contem os seguintes endpoints:
+## Testes
 
-```http request
-POST /beneficiarios - Registra  um novo beneficiario
-Content-Type: application/json
+Execute os testes automatizados com:
 
-{
-  "nome": "string",
-  "telefone": "string",
-  "dataNascimento": "1980-05-03",
-  "documentos": [
-    {
-      "tipoDocumento": "string",
-      "descricao": "string"
-    }
-  ]
-}
-```
-| Parâmetro   | Tipo       | Descrição                           |
-| :---------- | :--------- | :---------------------------------- |
-| `nome` | `String` | **Obrigatório**.
-| `telefone` | `String` | **Obrigatório**. 
-| `dataNascimento` | `String` | **Obrigatório**. 
-| `tipoDocumento` | `String` | **Obrigatório**. 
-| `descricao` | `String` | **Obrigatório**. 
-
-
-
-```http request
-GET /beneficiarios -  Lista todos os beneficiários
+```bash
+mvn test
 ```
 
-```http request
-GET /beneficiarios/{id} -  Lista beneficiario por id
-```
+## Status
 
-
-
-```http request
-PUT /beneficiarios/{id} - Atualizar um beneficiário existente
-Content-Type: application/json
-
-{
-  "nome": "string",
-  "telefone": "string",
-  "dataNascimento": "1980-05-03",
-  "documentos": [
-    {
-      "tipoDocumento": "string",
-      "descricao": "string"
-    }
-  ]
-}
-```
-
-
-
-```http request
-DELETE /beneficiarios/{id} - Remover  produto de id especificado.
-```
-
+Projeto desenvolvido para praticar a construção de APIs REST com Spring Boot, incluindo operações CRUD, validação, tratamento de exceções, documentação OpenAPI, monitoramento e execução em containers.
